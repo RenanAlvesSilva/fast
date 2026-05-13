@@ -1,6 +1,5 @@
 from .distance_service import calculate_distance
-from .services import search_nearby_stores
-from .distance_service import calculate_distance
+from .cep_service import search_nearby_stores
 
 
 async def get_nearby_stores(

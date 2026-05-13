@@ -40,7 +40,13 @@ Este comando criará um ambiente virtual (`.venv`) e instalará todas as depend�
 Para executar a aplicação em modo desenvolvimento com recarga automática:
 
 ```bash
-uv run uvicorn backend.routers:app --reload
+uv run uvicorn backend.api.routers:app --reload
+```
+
+Ou simplificando com:
+
+```bash
+uv run python main.py
 ```
 
 A API estará disponível em: **http://localhost:8000**
@@ -66,17 +72,26 @@ Após iniciar a aplicação, acesse:
 ```
 fast/
 ├── backend/
-│   ├── category.py          # Lógica de categorias
-│   ├── database.py          # Configuração do banco de dados
-│   ├── distance_service.py  # Serviço de cálculo de distância
-│   ├── models.py            # Modelos SQLAlchemy
-│   ├── routers.py           # Rotas da API
-│   ├── schemas.py           # Schemas Pydantic
-│   ├── services.py          # Lógica de negócio
-│   └── store_service.py     # Serviço de lojas
-├── main.py                  # Ponto de entrada
-├── pyproject.toml           # Configuração do projeto
-└── README.md                # Este arquivo
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── routers.py           # Rotas da API
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py            # Configuração do banco de dados
+│   │   └── models.py            # Modelos SQLAlchemy
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   └── schemas.py           # Schemas Pydantic
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── category.py          # Categorias disponíveis
+│   │   ├── cep_service.py       # Serviço de busca de CEP
+│   │   ├── distance_service.py  # Cálculo de distâncias
+│   │   └── store_service.py     # Serviço de lojas
+│   └── __init__.py
+├── main.py                       # Ponto de entrada
+├── pyproject.toml               # Configuração do projeto
+└── README.md                    # Este arquivo
 ```
 
 ### Ativar Ambiente Virtual (Opcional)

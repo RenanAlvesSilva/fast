@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from .database import Base
+from .config import Base
 
 
 class StoreModel(Base):
@@ -9,5 +9,3 @@ class StoreModel(Base):
     name = Column(String, index = True)
     latitude = Column(String, index = True)
     longitude =Column(String, index = True)
-    
-    

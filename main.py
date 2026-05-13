@@ -1,6 +1,6 @@
-def main():
-    print("Hello from fast!")
+from backend.api.routers import app
 
 
 if __name__ == "__main__":
-    main()
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)

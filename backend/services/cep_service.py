@@ -1,7 +1,9 @@
-from .schemas import CoordsUser
+from ..schemas.schemas import CoordsUser
 from typing import Optional
 import httpx
 from .category import CATEGORY_MAP
+
+
 async def get_cords_from_cep(cep: str) -> Optional[CoordsUser]:
     
     cep_url = f"https://viacep.com.br/ws/{cep}/json/"
@@ -49,53 +51,64 @@ async def get_cords_from_cep(cep: str) -> Optional[CoordsUser]:
         latitude=data[0]["lat"],
         longitude=data[0]["lon"]
     )
-    
 
 
 async def search_nearby_stores(
     latitude: float,
     longitude: float,
-    category: str,
-    radius: int = 5000,
+    category: str
 ):
     
-    overpass_url = "https://overpass-api.de/api/interpreter"
+    category_info = CATEGORY_MAP.get(category.lower())
     
-    category_data = CATEGORY_MAP.get(category)
-    if not category_data:
+    if not category_info:
         raise ValueError(f"Categoria '{category}' não encontrada.")
     
-    key = category_data["key"]
-    value = category_data["value"]
+    key = category_info["key"]
+    value = category_info["value"]
+    
+    overpass_url = "https://overpass-api.de/api/interpreter"
     
     query = f"""
     [out:json];
     (
-        node ["{key}" = "{value}"]
-        (around:{radius}, {latitude}, {longitude});
+        node["{key}"="{value}"](around:5000,{latitude},{longitude});
+        way["{key}"="{value}"](around:5000,{latitude},{longitude});
+        relation["{key}"="{value}"](around:5000,{latitude},{longitude});
     );
-    
-    out body;
+    out center;
     """
-    async with httpx.AsyncClient() as cliente:
-        response = await cliente.post(
-            overpass_url,
-            data=query,
-            headers= {"User-Agent": "buscador-lojas"}
-        )
     
-    data = response.json()
+    
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(
+        overpass_url,
+        data=query,
+        headers={"User-Agent": "buscador-lojas"})
+    
+    try:
+      data = response.json()
+    except Exception:
+        print(response.text)
+        return []
     
     stores = []
     
-    for item in data["elements"]:
-        tags = item.get("tags", {})
-        stores.append({
-            "id": item.get("id"),
-            "name": tags.get("name", "Loja sem nome"),
-            "latitude": item.get("lat"),
-            "longitude": item.get("lon")
-        })
+    for element in data.get("elements", []):
         
-    return stores
+        if "center" in element:
+            stores.append({
+                "id": element.get("id"),
+                "name": element.get("tags", {}).get("name", "Sem nome"),
+                "latitude": element["center"]["lat"],
+                "longitude": element["center"]["lon"]
+            })
+        elif "lat" in element and "lon" in element:
+            stores.append({
+                "id": element.get("id"),
+                "name": element.get("tags", {}).get("name", "Sem nome"),
+                "latitude": element["lat"],
+                "longitude": element["lon"]
+            })
     
+    return stores
