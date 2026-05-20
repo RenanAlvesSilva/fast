@@ -1,4 +1,4 @@
-# Fast
+# Places Near Me
 
 Projeto FastAPI para gerenciamento de lojas com cálculo de distância e categorias.
 
@@ -23,7 +23,7 @@ Ou use o instalador oficial.
 ### 2. Clonar o Repositório
 
 ```bash
-git clone https://github.com/RenanAlvesSilva/fast.git
+git clone https://github.com/RenanAlvesSilva/Places_near_me.git
 cd fast
 ```
 
